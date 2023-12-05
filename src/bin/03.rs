@@ -81,7 +81,7 @@ pub fn part_two(input: &str) -> Option<u32> {
     let width = input.lines().next().unwrap().len();
     let oneline = input.replace("\n", "");
     let mut number_accumulator = 0u32;
-    let mut found_gear = -1;
+
     let mut gear_indices = HashMap::new();
 
     let mut gear_index = 0;
@@ -94,8 +94,6 @@ pub fn part_two(input: &str) -> Option<u32> {
         if c != '*' {
             return;
         }
-
-        let mut adj_gears = 0;
 
         if pos > width {
             if pos % width != 0 {
@@ -135,7 +133,6 @@ pub fn part_two(input: &str) -> Option<u32> {
                     .get_mut(&gear_index)
                     .unwrap()
                     .push(number_accumulator);
-                number_accumulator = 0;
             }
             gear_index = -1;
             number_accumulator = 0;
