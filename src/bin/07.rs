@@ -216,13 +216,12 @@ pub fn part_one(input: &str) -> Option<u32> {
 
     hands.sort();
 
-    Some(hands.iter().enumerate().fold(0, |acc, (idx, hand)| {
-        println!(
-            "{}\t{} \t({})\t{:?}",
-            hand.hand_str, hand.bet, acc, hand.hand_type
-        );
-        acc + (1 + idx) as u32 * hand.bet
-    }))
+    Some(
+        hands
+            .iter()
+            .enumerate()
+            .fold(0, |acc, (idx, hand)| acc + (1 + idx) as u32 * hand.bet),
+    )
 }
 
 pub fn part_two(input: &str) -> Option<u32> {
@@ -233,13 +232,12 @@ pub fn part_two(input: &str) -> Option<u32> {
 
     hands.sort();
 
-    Some(hands.iter().enumerate().fold(0, |acc, (idx, hand)| {
-        println!(
-            "{}\t{} \t({})\t{:?}",
-            hand.hand_str, hand.bet, acc, hand.hand_type
-        );
-        acc + (1 + idx) as u32 * hand.bet
-    }))
+    Some(
+        hands
+            .iter()
+            .enumerate()
+            .fold(0, |acc, (idx, hand)| acc + (1 + idx) as u32 * hand.bet),
+    )
 }
 
 #[cfg(test)]
