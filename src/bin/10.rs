@@ -33,6 +33,7 @@ struct SewerMap {
     pub start: (usize, usize),
 }
 
+// TODO: Use Option<i32> rather than 999999999 to represent the 'no distance'
 impl SewerMap {
     pub fn new() -> SewerMap {
         SewerMap {
@@ -92,7 +93,7 @@ impl SewerMap {
             let dist = prev_score + 1;
             self.dist[current_y][current_x] = dist;
 
-            println!("Found: {},{} - {} ({})", current_x, current_y, cell, dist);
+            // println!("Found: {},{} - {} ({})", current_x, current_y, cell, dist);
             max_dist = max_dist.max(prev_score);
 
             // Check both neighbors of this cell, if they haven't been explored, add them to the queue
@@ -117,8 +118,6 @@ impl SewerMap {
                     walk_queue.push((current_x + 1, current_y, dist));
                 }
             }
-            // Check neighbors of current cell and add them to the queue if valid
-            // ... your logic here ...
         }
 
         self.dist.iter().fold(-1, |acc, row| {
@@ -128,6 +127,26 @@ impl SewerMap {
                 }
                 row_max.max(*cell)
             }))
+        })
+    }
+
+    fn check_interior_count(&self) -> i32 {
+        self.tiles.iter().enumerate().fold(0, |acc, (y, row)| {
+            let mut is_interior = false;
+
+            acc + row.iter().enumerate().fold(0, |row_count, (x, cell)| {
+                if let Connection::UpDown | Connection::UpLeft | Connection::UpRight = cell {
+                    if self.dist[y][x] != 999999999 {
+                        is_interior = !is_interior;
+                    }
+                }
+
+                if self.dist[y][x] == 999999999 && is_interior {
+                    return row_count + 1;
+                }
+
+                row_count
+            })
         })
     }
 }
@@ -181,8 +200,34 @@ pub fn part_one(input: &str) -> Option<i32> {
     Some(result)
 }
 
-pub fn part_two(_input: &str) -> Option<u32> {
-    None
+pub fn part_two(input: &str) -> Option<i32> {
+    let mut sewer_map = SewerMap::new();
+
+    input.lines().enumerate().for_each(|(y, line)| {
+        let mut temp = vec![];
+
+        line.chars().enumerate().for_each(|(x, ch)| {
+            match ch {
+                '|' => temp.push(Connection::UpDown),
+                '-' => temp.push(Connection::LeftRight),
+                'L' => temp.push(Connection::UpRight),
+                'J' => temp.push(Connection::UpLeft),
+                '7' => temp.push(Connection::DownLeft),
+                'F' => temp.push(Connection::DownRight),
+                '.' => temp.push(Connection::None),
+                'S' => {
+                    temp.push(Connection::Start);
+                    sewer_map.start = (x, y);
+                }
+                _ => println!("Unknown character in map: {}", ch),
+            };
+        });
+        sewer_map.tiles.push(temp);
+    });
+
+    sewer_map.walk_sewer();
+
+    Some(sewer_map.check_interior_count())
 }
 
 #[cfg(test)]
@@ -197,7 +242,7 @@ mod tests {
 
     #[test]
     fn test_part_two() {
-        let result = part_two(&advent_of_code::template::read_file("examples", DAY));
-        assert_eq!(result, None);
+        let result = part_two(&advent_of_code::template::read_file("inputs", DAY));
+        assert_eq!(result, Some(1));
     }
 }
