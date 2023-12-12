@@ -29,21 +29,11 @@ pub fn part_one(input: &str) -> Option<usize> {
         }
     });
 
-    Some(
-        galaxy_points
-            .iter()
-            .combinations_with_replacement(2)
-            .fold(0, |acc, c| {
-                let point_a = c[0];
-                let point_b = c[1];
-
-                if point_a == point_b {
-                    return acc;
-                }
-
-                acc + point_a.0.abs_diff(point_b.0) + point_a.1.abs_diff(point_b.1)
-            }),
-    )
+    Some(galaxy_points.iter().combinations(2).fold(0, |acc, c| {
+        let point_a = c[0];
+        let point_b = c[1];
+        acc + point_a.0.abs_diff(point_b.0) + point_a.1.abs_diff(point_b.1)
+    }))
 }
 
 pub fn part_two(input: &str) -> Option<usize> {
@@ -75,21 +65,12 @@ pub fn part_two(input: &str) -> Option<usize> {
 
     println!("{:?}", galaxy_points);
 
-    Some(
-        galaxy_points
-            .iter()
-            .combinations_with_replacement(2)
-            .fold(0, |acc, c| {
-                let point_a = c[0];
-                let point_b = c[1];
+    Some(galaxy_points.iter().combinations(2).fold(0, |acc, c| {
+        let point_a = c[0];
+        let point_b = c[1];
 
-                if point_a == point_b {
-                    return acc;
-                }
-
-                acc + point_a.0.abs_diff(point_b.0) + point_a.1.abs_diff(point_b.1)
-            }),
-    )
+        acc + point_a.0.abs_diff(point_b.0) + point_a.1.abs_diff(point_b.1)
+    }))
 }
 
 #[cfg(test)]
