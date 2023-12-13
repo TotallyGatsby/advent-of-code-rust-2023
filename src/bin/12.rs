@@ -3,7 +3,6 @@ use itertools::Itertools;
 advent_of_code::solution!(12);
 
 fn search_springs(line: &str, scores: &Vec<u32>) -> u32 {
-    // println!("Searching {} for {:?}", line, scores);
     // If we match the pattern, return 1 (treating all ? as .)
     if scores
         .iter()
@@ -19,6 +18,29 @@ fn search_springs(line: &str, scores: &Vec<u32>) -> u32 {
         // println!("Found");
         return 1;
     }
+    let spring_groups = line.split(".").filter(|c| c.len() > 0).collect_vec();
+    if spring_groups.iter().filter(|g| g.contains("#")).count() > scores.len() {
+        /*println!(
+            "Skipped (Spring groups too large {} vs {})\n{}",
+            spring_groups.len(),
+            scores.len(),
+            line
+        );*/
+        return 0;
+    }
+
+    let max_count = spring_groups.iter().fold(0, |acc, group| {
+        let q_count = group.chars().filter(|c| *c == '?').count();
+        let h_count = group.split("?").filter(|c| c.len() > 0).collect_vec().len();
+        // println!("{} - {}", group, h_count + ((q_count + 1) / 2));
+        acc + h_count + ((q_count + 1) / 2)
+    });
+
+    if max_count < scores.len() {
+        // println!("Skipped ({} max groups) \n{}", max_count, line);
+        return 0;
+    }
+
     // Replace the first ? and try both options
     if line.contains("?") {
         return search_springs(line.replacen("?", ".", 1).as_str(), scores)
@@ -46,7 +68,24 @@ pub fn part_one(input: &str) -> Option<u32> {
 }
 
 pub fn part_two(_input: &str) -> Option<u32> {
-    None
+    return None;
+    /*
+    Some(input.lines().fold(0, |acc, line| {
+        let chunks = line.split(" ").collect_vec();
+        println!("Testing: {}", chunks[0]);
+        let mult_line = vec![chunks[0]].repeat(5).join("?");
+        let new_results = search_springs(
+            mult_line.as_str(),
+            &chunks[1]
+                .split(",")
+                .map(|c| c.parse::<u32>().unwrap())
+                .collect_vec()
+                .repeat(5),
+        );
+
+        println!("Found {} results.", new_results);
+        acc + new_results
+    })) */
 }
 
 #[cfg(test)]
